@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Aula de Especificidade CSS</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .explicacao {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+        }
+
+        .card p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        code {
+            background: #eee;
+            padding: 3px 6px;
+            border-radius: 5px;
+        }
+
+        
+        /* 1. SELETOR POR TAG */
+        
+
+        h1 {
+            color: blue;
+            text-align: center;
+        }
+
+        /*
+            Esse seletor pega TODOS os h1 da página.
+            Ele é um seletor mais fraco, porque seleciona apenas pela tag.
+        */
+
+        
+        /* 2. SELETOR POR CLASSE */
+        
+
+        .titulo {
+            color: green;
+        }
+
+        /*
+            Esse seletor é mais forte que h1.
+            Por isso, se o h1 também tiver class="titulo",
+            a cor verde vence a cor azul.
+        */
+
+       
+        /* 3. SELETOR POR ID */
+       
+
+        #titulo-principal {
+            color: purple;
+        }
+
+        /*
+            O ID é mais forte que a classe.
+            Então, mesmo que o h1 tenha a classe .titulo,
+            o ID #titulo-principal vence.
+        */
+
+       
+        /* 4. HOVER EM UM CARD SIMPLES */
+       
+
+        .card-hover {
+            background: white;
+            transform: scale(1);
+        }
+
+        .card-hover:hover {
+            background: #dbeafe;
+            transform: scale(1.05);
+        }
+
+        /*
+            .card-hover:hover é mais específico que .card-hover.
+            Ele só funciona quando o mouse está em cima do card.
+        */
+
+       
+        /* 5. DUAS CLASSES JUNTAS */
+       
+
+        .caixa {
+            background: #fff7ed;
+        }
+
+        .caixa.destaque {
+            background: #fde68a;
+            border: 3px solid #f59e0b;
+        }
+
+        .caixa.destaque:hover {
+            background: #f97316;
+            color: white;
+            transform: translateY(-10px);
+        }
+
+        /*
+            .caixa seleciona qualquer elemento com a classe caixa.
+
+            .caixa.destaque seleciona apenas elementos que tenham
+            as duas classes ao mesmo tempo.
+
+            .caixa.destaque:hover é ainda mais específico,
+            porque exige:
+            - classe caixa
+            - classe destaque
+            - mouse em cima
+        */
+
+       
+        /* 6. PSEUDO-ELEMENTO ::BEFORE */
+       
+
+        .before-card::before {
+            content: "ANTES";
+            display: block;
+            background: #2563eb;
+            color: white;
+            padding: 5px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .before-card:hover::before {
+            content: "MOUSE EM CIMA";
+            background: #16a34a;
+        }
+
+        /*
+            ::before cria um conteúdo antes do conteúdo real do elemento.
+
+            Ele não existe no HTML.
+            O CSS cria visualmente esse pedaço.
+
+            Quando usamos :hover::before, estamos dizendo:
+            "quando passar o mouse no card, altere o ::before".
+        */
+
+       
+        /* 7. PSEUDO-ELEMENTO ::AFTER */
+       
+
+        .after-card::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 8px;
+            background: #ec4899;
+            left: 0;
+            bottom: 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s;
+        }
+
+        .after-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        /*
+            ::after cria um conteúdo depois do conteúdo real do elemento.
+
+            Neste exemplo, ele cria uma barrinha rosa embaixo do card.
+            Ela começa invisível com scaleX(0).
+            No hover, ela cresce com scaleX(1).
+        */
+
+       
+        /* 8. EXEMPLO DE CONFLITO DE ESPECIFICIDADE */
+       
+
+        .botao {
+            background: gray;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .especial {
+            background: green;
+        }
+
+        .botao.especial {
+            background: blue;
+        }
+
+        #botao-importante {
+            background: purple;
+        }
+
+        #botao-importante:hover {
+            background: red;
+            transform: scale(1.1);
+        }
+
+        /*
+            Aqui temos várias regras tentando mudar o background.
+
+            .botao deixa cinza.
+            .especial deixa verde.
+            .botao.especial deixa azul.
+            #botao-importante deixa roxo.
+            #botao-importante:hover deixa vermelho no hover.
+
+            O ID vence as classes.
+            E o ID com :hover vence quando o mouse passa em cima.
+        */
+
+        /* ========================================================= */
+        /* 9. PSEUDO-CLASSE NTH-CHILD */
+        /* ========================================================= */
+
+        .lista span {
+            display: inline-block;
+            background: #e5e7eb;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .lista span:nth-child(2) {
+            background: #93c5fd;
+        }
+
+        .lista span:nth-child(3) {
+            background: #fca5a5;
+        }
+
+        .lista span:hover {
+            transform: translateY(-8px);
+            background: #111827;
+            color: white;
+        }
+
+        /*
+            nth-child(2) seleciona o segundo filho.
+            nth-child(3) seleciona o terceiro filho.
+
+            Isso é útil quando queremos estilizar um item específico
+            sem criar uma classe para ele.
+        */
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="explicacao">
+            <h1 id="titulo-principal" class="titulo">
+                Aula de Especificidade CSS
+            </h1>
+
+            <p>
+                Este título é um <code>h1</code>, também tem a classe
+                <code>.titulo</code> e o ID <code>#titulo-principal</code>.
+            </p>
+
+            <p>
+                O CSS tentou aplicar três cores nele:
+                <code>h1</code> queria azul,
+                <code>.titulo</code> queria verde,
+                e <code>#titulo-principal</code> queria roxo.
+            </p>
+
+            <p>
+                Resultado: ficou roxo, porque o ID tem mais especificidade.
+            </p>
+        </div>
+
+        <div class="grid">
+
+            <div class="card card-hover">
+                <h2>1. Classe + Hover</h2>
+                <p>
+                    Este card usa <code>.card-hover</code> no estado normal.
+                </p>
+                <p>
+                    Ao passar o mouse, entra <code>.card-hover:hover</code>.
+                </p>
+                <p>
+                    O hover vence porque é uma situação mais específica.
+                </p>
+            </div>
+
+            <div class="card caixa destaque">
+                <h2>2. Duas Classes</h2>
+                <p>
+                    Este card tem duas classes:
+                    <code>caixa</code> e <code>destaque</code>.
+                </p>
+                <p>
+                    A regra <code>.caixa.destaque</code> é mais específica que apenas
+                    <code>.caixa</code>.
+                </p>
+                <p>
+                    Passe o mouse para ver <code>.caixa.destaque:hover</code>.
+                </p>
+            </div>
+
+            <div class="card before-card">
+                <h2>3. ::before</h2>
+                <p>
+                    O texto azul acima foi criado pelo CSS com
+                    <code>::before</code>.
+                </p>
+                <p>
+                    Ele não está escrito no HTML.
+                </p>
+                <p>
+                    Passe o mouse e veja o conteúdo mudar.
+                </p>
+            </div>
+
+            <div class="card after-card">
+                <h2>4. ::after</h2>
+                <p>
+                    Este card usa <code>::after</code> para criar uma barra embaixo.
+                </p>
+                <p>
+                    Passe o mouse para a barra aparecer.
+                </p>
+                <p>
+                    Parece mágica, mas é só CSS se achando artista.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>5. ID vence Classe</h2>
+
+                <p>
+                    O botão abaixo tem classe <code>.botao</code>,
+                    classe <code>.especial</code> e ID
+                    <code>#botao-importante</code>.
+                </p>
+
+                <div id="botao-importante" class="botao especial">
+                    Passe o mouse aqui
+                </div>
+
+                <p>
+                    A cor final normal é roxa, porque o ID vence.
+                    No hover, o ID com <code>:hover</code> deixa vermelho.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>6. nth-child</h2>
+
+                <p>
+                    Aqui o CSS seleciona o segundo e o terceiro item sem usar classe.
+                </p>
+
+                <div class="lista">
+                    <span>Item 1</span>
+                    <span>Item 2</span>
+                    <span>Item 3</span>
+                    <span>Item 4</span>
+                </div>
+
+                <p>
+                    Passe o mouse nos itens para ver outra regra entrando em ação.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
